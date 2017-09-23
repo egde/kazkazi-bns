@@ -1,0 +1,10 @@
+circle {
+  fill: #ccc;
+  stroke: #fff;
+  stroke-width: 1px;
+}
+
+line {
+  stroke: #777;
+  stroke-width: 1px;
+}

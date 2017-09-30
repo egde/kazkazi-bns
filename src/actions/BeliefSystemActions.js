@@ -2,6 +2,7 @@ import dispatcher from '../Dispatcher'
 
 export const CREATE_BELIEFSYSTEM = "CREATE_BELIEF-SYSTEM"
 export const ADD_EVENT = "ADD_EVENT"
+export const UPDATE_EVENT = "UPDATE_EVENT"
 
 export function createBeliefSystem(title) {
   dispatcher.dispatch({
@@ -14,5 +15,14 @@ export function addEvent(name) {
   dispatcher.dispatch({
     type: ADD_EVENT,
     name,
+  })
+}
+
+export function updateEvent(id, name, position) {
+  dispatcher.dispatch({
+    type: UPDATE_EVENT,
+    id,
+    name,
+    position
   })
 }

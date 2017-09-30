@@ -8,3 +8,8 @@ line {
   stroke: #777;
   stroke-width: 1px;
 }
+
+.active {
+  stroke: #000;
+  stroke-width: 2px;
+}

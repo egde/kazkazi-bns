@@ -1,16 +1,40 @@
 import { EventEmitter } from 'events'
 import dispatcher from '../Dispatcher'
-import {ADD_EVENT, CREATE_BELIEFSYSTEM} from '../actions/BeliefSystemActions'
+import {ADD_EVENT, CREATE_BELIEFSYSTEM,UPDATE_EVENT} from '../actions/BeliefSystemActions'
 
 export const ON_NEW_EVENT = "onNewEvent"
 export const ON_NEW_CREATED = "onNewCreated"
+export const ON_UPDATE_EVENT = "onEventUpdated"
+
+const TEST = {
+  id: 1506756792575,
+  title: "Bayern München",
+  events: [
+    {
+      id: 1506756808939,
+      name: "Letztes Spiel gewonnen",
+      position: {
+        x: 100,
+        y:100
+      },
+      isBoolean: true
+    }
+  ]
+}
 
 class BeliefSystemStore extends EventEmitter {
   constructor(props) {
     super(props)
-    this.beliefSystems = [
-    ]
-    this.currentBeliefSystem = null
+
+    if (process.env.NODE_ENV === 'development') {
+      this.beliefSystems = [ TEST
+      ]
+      this.currentBeliefSystem = TEST
+    } else {
+      this.beliefSystems = [ null
+      ]
+      this.currentBeliefSystem = null
+    }
   }
 
   createBeliefSystem( title ) {
@@ -39,6 +63,14 @@ class BeliefSystemStore extends EventEmitter {
     this.emit(ON_NEW_EVENT)
   }
 
+  updateEvent(id, name, position) {
+    var event = this.currentBeliefSystem.events.find( (i) => { return i.id === id} )
+    event.name = name;
+    event.position = position;
+
+    this.emit(ON_UPDATE_EVENT)
+  }
+
   getAll() {
     return this.beliefSystemStore
   }
@@ -57,6 +89,9 @@ class BeliefSystemStore extends EventEmitter {
       case ADD_EVENT:
         this.addEvent(action.name)
         break
+      case UPDATE_EVENT:
+          this.updateEvent(action.id, action.name, action.position)
+          break
       default :
         break
     }

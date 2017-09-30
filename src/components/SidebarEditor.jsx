@@ -3,7 +3,7 @@ import './SidebarEditor.css'
 
 import NewEventModal from '../components/NewEventModal'
 
-import BeliefSystemStore, {ON_NEW_CREATED, ON_NEW_EVENT} from '../stores/BeliefSystemStore'
+import BeliefSystemStore, {ON_NEW_CREATED, ON_NEW_EVENT, ON_UPDATE_EVENT} from '../stores/BeliefSystemStore'
 
 class SidebarEditor extends Component {
 
@@ -11,7 +11,7 @@ class SidebarEditor extends Component {
     super(props)
 
     this.state = {
-      beliefSystem : null
+      beliefSystem : BeliefSystemStore.getCurrent()
     }
 
     this.getEvents = this.getEvents.bind(this)
@@ -21,11 +21,14 @@ class SidebarEditor extends Component {
   componentWillMount() {
     BeliefSystemStore.on(ON_NEW_EVENT, this.getEvents)
     BeliefSystemStore.on(ON_NEW_CREATED, this.getEvents)
+    BeliefSystemStore.on(ON_UPDATE_EVENT, this.getEvents)
+
   }
 
   componentWillUnmount() {
     BeliefSystemStore.removeListener(ON_NEW_EVENT, this.getEvents)
     BeliefSystemStore.removeListener(ON_NEW_CREATED, this.getEvents)
+    BeliefSystemStore.removeListener(ON_UPDATE_EVENT, this.getEvents)
   }
 
   render() {

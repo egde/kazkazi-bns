@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
+import * as BeliefSystemActions from '../actions/BeliefSystemActions'
 
-import { select } from 'd3-selection'
+import * as d3 from 'd3'
 import './BayesNetworkGraph.css'
 
 class BayesNetworkGraph extends Component {
@@ -21,17 +22,36 @@ class BayesNetworkGraph extends Component {
     const node = this.node
     if (this.props.data && this.props.data.events) {
 
-      var eventNodes = select(node)
+      var eventNodes = d3.select(node)
         .selectAll("circle")
         .data(this.props.data.events)
         .enter()
         .append("circle")
+        .call(d3.drag()
+          .on("start", dragStarted)
+          .on("drag", dragged)
+          .on("end", dragEnded))
 
       eventNodes
         .attr("r", 10)
         .attr("cx", (dataValue) => {return dataValue.position.x})
         .attr("cy", (dataValue) => {return dataValue.position.y})
 
+      function dragStarted(d) {
+        d3.select(this).raise().classed("active", true);
+      }
+
+      function dragged(d) {
+          d3.select(this)
+            .attr("cx", d.x = d3.event.x)
+            .attr("cy", d.y = d3.event.y)
+      }
+
+      function dragEnded() {
+        var eventNode = d3.select(this)
+        eventNode.classed("active", false);
+        BeliefSystemActions.updateEvent(eventNode.datum().id, eventNode.datum().name, {x: eventNode.datum().x, y: eventNode.datum().y})
+      }
     }
   }
 

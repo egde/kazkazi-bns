@@ -4,6 +4,8 @@ import './SidebarEditor.css'
 import NewEventModal from '../components/NewEventModal'
 
 import BeliefSystemStore, {ON_NEW_CREATED, ON_NEW_EVENT, ON_UPDATE_EVENT} from '../stores/BeliefSystemStore'
+import GraphStore from '../stores/GraphStore'
+import * as GraphActions from '../actions/GraphActions'
 
 class SidebarEditor extends Component {
 
@@ -11,11 +13,13 @@ class SidebarEditor extends Component {
     super(props)
 
     this.state = {
-      beliefSystem : BeliefSystemStore.getCurrent()
+      beliefSystem : BeliefSystemStore.getCurrent(),
+      graphMode : GraphStore.getGraphStore().graphMode
     }
 
     this.getEvents = this.getEvents.bind(this)
     this.onClick_AddEvent = this.onClick_AddEvent.bind(this)
+    this.onClick_SwitchGraphMode = this.onClick_SwitchGraphMode.bind(this)
   }
 
   componentWillMount() {
@@ -32,6 +36,14 @@ class SidebarEditor extends Component {
   }
 
   render() {
+    function GraphModeIcon(props) {
+      if (props.graphMode === "drag") {
+        return <span className="glyphicon glyphicon glyphicon-move" aria-hidden="true"></span>
+      } else {
+        return <span className="glyphicon glyphicon-king" aria-hidden="true"></span>
+      }
+    }
+
     return (
       <div id="sidebarEditor" className="col-sm-3 col-md-2 sidebar">
         <div className="row btnMenu">
@@ -44,6 +56,11 @@ class SidebarEditor extends Component {
             <div className="btn-group" role="group">
               <button type="button" className="btn btn-default" disabled={!this.state.beliefSystem} onClick={this.onClick_AddEvent}>
                 <span className="glyphicon glyphicon-plus" aria-hidden="true"></span>
+              </button>
+            </div>
+            <div className="btn-group" role="group">
+              <button type="button" className="btn btn-default" disabled={!this.state.beliefSystem} onClick={this.onClick_SwitchGraphMode}>
+                <GraphModeIcon graphMode={this.state.graphMode}/>
               </button>
             </div>
           </div>
@@ -73,6 +90,20 @@ class SidebarEditor extends Component {
 
   onClick_AddEvent() {
     this.newEventModal.show()
+  }
+
+  onClick_SwitchGraphMode() {
+    var graphMode = null
+    if (this.state.graphMode === "influencing") {
+      graphMode = "drag"
+    } else {
+      graphMode = "influencing"
+    }
+
+    this.setState({
+      graphMode : graphMode
+    })
+    GraphActions.updateGraphMode(graphMode)
   }
 }
 

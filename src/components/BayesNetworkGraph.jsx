@@ -1,6 +1,8 @@
 import React, { Component } from 'react'
 import * as BeliefSystemActions from '../actions/BeliefSystemActions'
 
+import GraphStore, {ON_UPDATE_GRAPHMODE} from '../stores/GraphStore'
+
 import * as d3 from 'd3'
 import './BayesNetworkGraph.css'
 
@@ -8,6 +10,15 @@ class BayesNetworkGraph extends Component {
   constructor(props) {
     super(props)
     this.createGraph = this.createGraph.bind(this)
+    this.updateGraphMode = this.updateGraphMode.bind(this)
+
+    this.state = {
+      graphMode : GraphStore.getGraphStore().graphMode
+    }
+  }
+
+  componentWillMount() {
+    GraphStore.on(ON_UPDATE_GRAPHMODE, this.updateGraphMode)
   }
 
   componentDidMount() {
@@ -18,8 +29,13 @@ class BayesNetworkGraph extends Component {
     this.createGraph()
   }
 
+  componentWillUnmount() {
+    GraphStore.removeListener(ON_UPDATE_GRAPHMODE, this.updateGraphMode)
+  }
+
   createGraph() {
     const node = this.node
+
     if (this.props.data && this.props.data.events) {
 
       var eventNodes = d3.select(node)
@@ -27,10 +43,19 @@ class BayesNetworkGraph extends Component {
         .data(this.props.data.events)
         .enter()
         .append("circle")
-        .call(d3.drag()
+      var ev = d3.select(node)
+        .selectAll("circle");
+      if (this.state.graphMode === "drag") {
+        ev.call(d3.drag()
           .on("start", dragStarted)
           .on("drag", dragged)
           .on("end", dragEnded))
+      } else {
+        ev.call(d3.drag()
+          .on("start", null)
+          .on("drag", null)
+          .on("end", null))
+      }
 
       eventNodes
         .attr("r", 10)
@@ -39,6 +64,10 @@ class BayesNetworkGraph extends Component {
 
       function dragStarted(d) {
         d3.select(this).raise().classed("active", true);
+      }
+
+      function doNothing() {
+        console.log("Do nothing!")
       }
 
       function dragged(d) {
@@ -59,6 +88,12 @@ class BayesNetworkGraph extends Component {
       return <svg ref={node => this.node = node}
       width={960} height={500}>
       </svg>
+   }
+
+   updateGraphMode() {
+     this.setState({
+       graphMode : GraphStore.getGraphStore().graphMode
+     })
    }
 }
 

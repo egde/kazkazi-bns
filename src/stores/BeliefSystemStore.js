@@ -18,7 +18,42 @@ const TEST = {
         y:100
       },
       isBoolean: true
+    },
+    {
+      id: 15067568082239,
+      name: "Ribery verletzt",
+      position: {
+        x: 100,
+        y:150
+      },
+      isBoolean: true
+    },
+    {
+      id: 1506772736792,
+      name: "Spiel verloren",
+      position: {
+        x: 150,
+        y:150
+      },
+      isBoolean: true
     }
+  ],
+  influences: [
+    {
+      id:1,
+      cause: 1506756808939,
+      action: 1506772736792
+    },
+    {
+      id:2,
+      cause: 15067568082239,
+      action: 1506772736792
+    },
+    {
+      id:3,
+      cause: 1506756808939,
+      action: 15067568082239
+    },
   ]
 }
 

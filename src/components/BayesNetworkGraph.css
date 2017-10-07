@@ -13,3 +13,9 @@ line {
   stroke: #000;
   stroke-width: 2px;
 }
+
+svg {
+  height:600px;
+  width:100%;
+  display: block;
+}

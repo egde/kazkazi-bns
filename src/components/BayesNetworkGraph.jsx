@@ -66,9 +66,9 @@ class BayesNetworkGraph extends Component {
           .on("end", dragEnded))
       } else {
         ev.call(d3.drag()
-          .on("start", null)
-          .on("drag", null)
-          .on("end", null))
+          .on("start", dragStartedOnInfluencing)
+          .on("drag", draggedOnInfluencing)
+          .on("end", dragEndedOnInfluencing))
       }
 
       eventNodes
@@ -212,10 +212,35 @@ class BayesNetworkGraph extends Component {
 
       }
 
+      function dragStartedOnInfluencing(d) {
+        var selected = d3.select(this).raise().classed("active", true)
+
+        var newInfluence = d3.select(node)
+          .append("line")
+          .attr("marker-end", "url(#triangle)")
+          .attr("x1", parseFloat(selected.attr("cx")))
+          .attr("y1", parseFloat(selected.attr("cy")))
+          .attr("state", "new")
+      }
+
+      function draggedOnInfluencing(d) {
+        var node = d3.select(this)
+
+        var newInfluence = d3.selectAll("line[state=new]")
+          .attr("x2", d3.event.x)
+          .attr("y2", d3.event.y)
+      }
+
       function dragEnded() {
         var eventNode = d3.select(this)
-        eventNode.classed("active", false);
+        eventNode.classed("active", false)
         BeliefSystemActions.updateEvent(eventNode.datum().id, eventNode.datum().name, {x: eventNode.datum().x, y: eventNode.datum().y})
+      }
+
+      function dragEndedOnInfluencing(d) {
+        var startNode = d3.select(this)
+        startNode.classed("active", false)
+        var event = d3.event
       }
     }
   }

@@ -1,7 +1,7 @@
 ---
 applications:
 - name: kazkazi-bns
-  memory: 64M
+  memory: 128M
   instances: 1
   path: .
-command: npm run build; node node_modules/simplehttpserver/simplehttpserver.js build/
+command: "node node_modules/serve/bin/serve.js -p 8080 build/"

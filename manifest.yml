@@ -1,0 +1,7 @@
+---
+applications:
+- name: kazkazi-bns
+  memory: 64M
+  instances: 1
+  path: .
+command: npm run build; node node_modules/simplehttpserver/simplehttpserver.js build/

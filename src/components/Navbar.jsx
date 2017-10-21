@@ -17,7 +17,7 @@ class Navbar extends Component {
         <nav className="navbar navbar-inverse navbar-fixed-top">
           <div className="container-fluid">
             <div className="navbar-header">
-              <a className="navbar-brand" href="#">Kazkazi BNS</a>
+              <a className="navbar-brand" href="/">Kazkazi BNS</a>
             </div>
             <div className="navbar-collapse collapse">
               <ul className="nav navbar-nav navbar-right">

@@ -12,6 +12,17 @@ line {
 .active {
   stroke: #000;
   stroke-width: 2px;
+  fill: #FF0000;
+}
+
+.highlight {
+  stroke: #000;
+  stroke-width: 2px;
+}
+
+.onMouseOver{
+  stroke: #000;
+  stroke-width: 2px;
 }
 
 svg {

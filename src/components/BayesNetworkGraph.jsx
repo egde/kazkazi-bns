@@ -76,6 +76,12 @@ class BayesNetworkGraph extends Component {
         .attr("cx", (dataValue) => {return dataValue.position.x})
         .attr("cy", (dataValue) => {return dataValue.position.y})
         .attr("id", (dataValue) => {return dataValue.id})
+        .on("mouseover", function() {
+          d3.select(this).classed("highlight", true)
+        })
+        .on("mouseout", function() {
+          d3.select(this).classed("highlight", false)
+        })
 
       var influenceEdges = d3.select(node)
         .selectAll("line")
@@ -208,8 +214,12 @@ class BayesNetworkGraph extends Component {
               .attr('y1', y + offset.y)
               .attr("marker-end", "url(#triangle)")
           }
-
-
+      }
+      
+      function dragEnded() {
+        var eventNode = d3.select(this)
+        eventNode.classed("active", false)
+        BeliefSystemActions.updateEvent(eventNode.datum().id, eventNode.datum().name, {x: eventNode.datum().x, y: eventNode.datum().y})
       }
 
       function dragStartedOnInfluencing(d) {
@@ -231,16 +241,12 @@ class BayesNetworkGraph extends Component {
           .attr("y2", d3.event.y)
       }
 
-      function dragEnded() {
-        var eventNode = d3.select(this)
-        eventNode.classed("active", false)
-        BeliefSystemActions.updateEvent(eventNode.datum().id, eventNode.datum().name, {x: eventNode.datum().x, y: eventNode.datum().y})
-      }
-
       function dragEndedOnInfluencing(d) {
         var startNode = d3.select(this)
         startNode.classed("active", false)
-        var event = d3.event
+        var newInfluence = d3.selectAll("line[state=new]")
+        newInfluence.attr("state", null)
+        
       }
     }
   }

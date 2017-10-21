@@ -5,7 +5,7 @@ class Footer extends Component {
     return (
       <div className="navbar navbar-default navbar-fixed-bottom">
         <div className="container">
-          <p className="navbar-text pull-left">© { (new Date()).getFullYear() } Kazkazi
+          <p className="navbar-text pull-left"><a href="/about">© { (new Date()).getFullYear() } Kazkazi</a>
           </p>
         </div>
       </div>

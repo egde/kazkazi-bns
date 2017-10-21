@@ -5,6 +5,7 @@ import 'bootstrap/dist/css/bootstrap-theme.css'
 import './App.css'
 
 import Home from './pages/Home.jsx'
+import About from './pages/About.jsx'
 import Navbar from './components/Navbar.jsx'
 import Footer from './components/Footer.jsx'
 
@@ -17,6 +18,7 @@ class App extends Component {
           <BrowserRouter>
             <Switch>
               <Route exact path="/" component={Home}/>
+              <Route exact path="/about" component={About}/>
             </Switch>
           </BrowserRouter>
         </div>

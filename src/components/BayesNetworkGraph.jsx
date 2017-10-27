@@ -6,6 +6,11 @@ import GraphStore, {ON_UPDATE_GRAPHMODE} from '../stores/GraphStore'
 import * as d3 from 'd3'
 import './BayesNetworkGraph.css'
 
+const DragDropManager = {
+  source: null,
+  target: null
+}
+
 class BayesNetworkGraph extends Component {
   constructor(props) {
     super(props)
@@ -78,9 +83,11 @@ class BayesNetworkGraph extends Component {
         .attr("id", (dataValue) => {return dataValue.id})
         .on("mouseover", function() {
           d3.select(this).classed("highlight", true)
+          DragDropManager.target = d3.select(this)
         })
         .on("mouseout", function() {
           d3.select(this).classed("highlight", false)
+          DragDropManager.target = null
         })
 
       var influenceEdges = d3.select(node)
@@ -123,42 +130,43 @@ class BayesNetworkGraph extends Component {
 
           return eventAction.position.y + offset.y
         })
+    }
+    
+    function calcOffset(cause, action) {
 
-      function calcOffset(cause, action) {
+      var eventCause = data.events.find((i) => {
+        return i.id===cause
+      })
+      var eventAction = data.events.find((i) => {
+        return i.id===action
+      })
 
-        var eventCause = data.events.find((i) => {
-          return i.id===cause
-        })
-        var eventAction = data.events.find((i) => {
-          return i.id===action
-        })
+      var pos1 = {x: eventCause.position.x, y: eventCause.position.y}
+      var pos2 = {x: eventAction.position.x, y: eventAction.position.y}
 
-        var pos1 = {x: eventCause.position.x, y: eventCause.position.y}
-        var pos2 = {x: eventAction.position.x, y: eventAction.position.y}
+      return calcOffset2(pos1, pos2)
+    }
 
-        return calcOffset2(pos1, pos2)
-      }
+    function calcOffset2(pos1, pos2) {
+      var result = { x: 0, y: 0 }
+      var diffX =  pos1.x - pos2.x
+      var diffY =  pos1.y - pos2.y
 
-      function calcOffset2(pos1, pos2) {
-        var result = { x: 0, y: 0 }
-        var diffX =  pos1.x - pos2.x
-        var diffY =  pos1.y - pos2.y
+      var distance = Math.sqrt(diffX*diffX + diffY*diffY)
+      result.x = (diffX / distance * 10)
+      result.y = (diffY / distance * 10)
 
-        var distance = Math.sqrt(diffX*diffX + diffY*diffY)
-        result.x = (diffX / distance * 10)
-        result.y = (diffY / distance * 10)
-
-        return result
-      }
-
-      function dragStarted(d) {
+      return result
+    }
+      
+    function dragStarted(d) {
         d3.select(this).raise().classed("active", true);
       }
 
       function dragged(d) {
           var node = d3.select(this)
-          node.attr("cx", d.x = d3.event.x)
-            .attr("cy", d.y = d3.event.y)
+          node.attr("cx", d.x = d3.mouse(this)[0])
+            .attr("cy", d.y = d3.mouse(this)[1])
 
           var lineCause = d3.selectAll("line").filter((d, i) => {
             return d.cause === node.datum().id
@@ -221,34 +229,40 @@ class BayesNetworkGraph extends Component {
         eventNode.classed("active", false)
         BeliefSystemActions.updateEvent(eventNode.datum().id, eventNode.datum().name, {x: eventNode.datum().x, y: eventNode.datum().y})
       }
-
-      function dragStartedOnInfluencing(d) {
+      
+    function dragStartedOnInfluencing(d) {
         var selected = d3.select(this).raise().classed("active", true)
-
-        var newInfluence = d3.select(node)
+        DragDropManager.source = selected
+        
+        d3.select(node)
           .append("line")
           .attr("marker-end", "url(#triangle)")
           .attr("x1", parseFloat(selected.attr("cx")))
           .attr("y1", parseFloat(selected.attr("cy")))
+          .attr("x2", d3.mouse(this)[0])
+          .attr("y2", d3.mouse(this)[1])
           .attr("state", "new")
       }
 
       function draggedOnInfluencing(d) {
-        var node = d3.select(this)
+        d3.select(this)
 
-        var newInfluence = d3.selectAll("line[state=new]")
-          .attr("x2", d3.event.x)
-          .attr("y2", d3.event.y)
+        d3.selectAll("line[state=new]")
+          .attr("x2", d3.mouse(this)[0])
+          .attr("y2", d3.mouse(this)[1])
       }
 
       function dragEndedOnInfluencing(d) {
-        var startNode = d3.select(this)
+        var startNode = DragDropManager.source
         startNode.classed("active", false)
+        var endNode = DragDropManager.target
         var newInfluence = d3.selectAll("line[state=new]")
-        newInfluence.attr("state", null)
-        
+        if (!startNode || !endNode) {
+          newInfluence.remove()
+        } else {
+          BeliefSystemActions.addInfluence(startNode.datum(), endNode.datum())
+        }
       }
-    }
   }
 
   render() {

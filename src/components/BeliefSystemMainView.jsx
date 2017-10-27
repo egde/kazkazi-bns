@@ -3,7 +3,7 @@ import React, {Component} from 'react'
 import NewBeliefSystemModal from '../components/NewBeliefSystemModal'
 import BayesNetworkGraph from '../components/BayesNetworkGraph'
 
-import BeliefSystemStore, {ON_NEW_CREATED, ON_NEW_EVENT} from '../stores/BeliefSystemStore'
+import BeliefSystemStore, {ON_NEW_CREATED, ON_NEW_EVENT, ON_INFLUENCE_ADDED} from '../stores/BeliefSystemStore'
 
 class BeliefSystemMainView extends Component {
   constructor() {
@@ -18,11 +18,13 @@ class BeliefSystemMainView extends Component {
   componentWillMount() {
     BeliefSystemStore.on(ON_NEW_CREATED, this.getCurrentBeliefSystem)
     BeliefSystemStore.on(ON_NEW_EVENT, this.getCurrentBeliefSystem)
+    BeliefSystemStore.on(ON_INFLUENCE_ADDED, this.getCurrentBeliefSystem)
   }
 
   componentWillUnmount() {
     BeliefSystemStore.removeListener(ON_NEW_CREATED, this.getCurrentBeliefSystem)
     BeliefSystemStore.removeListener(ON_NEW_EVENT, this.getCurrentBeliefSystem)
+    BeliefSystemStore.removeListener(ON_INFLUENCE_ADDED, this.getCurrentBeliefSystem)
   }
 
   getCurrentBeliefSystem() {

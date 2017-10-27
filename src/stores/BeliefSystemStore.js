@@ -1,10 +1,11 @@
 import { EventEmitter } from 'events'
 import dispatcher from '../Dispatcher'
-import {ADD_EVENT, CREATE_BELIEFSYSTEM,UPDATE_EVENT} from '../actions/BeliefSystemActions'
+import {ADD_EVENT, CREATE_BELIEFSYSTEM,UPDATE_EVENT, ADD_INFLUENCE} from '../actions/BeliefSystemActions'
 
 export const ON_NEW_EVENT = "onNewEvent"
 export const ON_NEW_CREATED = "onNewCreated"
 export const ON_UPDATE_EVENT = "onEventUpdated"
+export const ON_INFLUENCE_ADDED = "onInfluenceAdded"
 
 const TEST = {
   id: 1506756792575,
@@ -105,6 +106,18 @@ class BeliefSystemStore extends EventEmitter {
 
     this.emit(ON_UPDATE_EVENT)
   }
+  
+  addInfluence(cause, action) {
+    var newInfluence = {
+      id: Date.now(),
+      cause: cause.id,
+      action: action.id
+    }
+    
+    this.currentBeliefSystem.influences.push(newInfluence)
+    
+    this.emit(ON_INFLUENCE_ADDED)
+  }
 
   getAll() {
     return this.beliefSystemStore
@@ -125,8 +138,11 @@ class BeliefSystemStore extends EventEmitter {
         this.addEvent(action.name)
         break
       case UPDATE_EVENT:
-          this.updateEvent(action.id, action.name, action.position)
-          break
+        this.updateEvent(action.id, action.name, action.position)
+        break
+      case ADD_INFLUENCE:
+        this.addInfluence(action.cause, action.action)
+        break
       default :
         break
     }

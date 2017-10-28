@@ -78,6 +78,7 @@ class BeliefSystemStore extends EventEmitter {
       id : Date.now(),
       title,
       events : [],
+      influences : []
     }
 
     this.beliefSystems.push(beliefSystem)
@@ -106,16 +107,16 @@ class BeliefSystemStore extends EventEmitter {
 
     this.emit(ON_UPDATE_EVENT)
   }
-  
+
   addInfluence(cause, action) {
     var newInfluence = {
       id: Date.now(),
       cause: cause.id,
       action: action.id
     }
-    
+
     this.currentBeliefSystem.influences.push(newInfluence)
-    
+    console.log("BeliefSystem is: ", this.currentBeliefSystem)
     this.emit(ON_INFLUENCE_ADDED)
   }
 
@@ -128,6 +129,7 @@ class BeliefSystemStore extends EventEmitter {
   }
 
   handleActions(action) {
+    console.log("BeliefSystemStore received an action", action);
     switch(action.type) {
       case CREATE_BELIEFSYSTEM:
         var beliefSystem = this.createBeliefSystem(action.title)
@@ -146,7 +148,6 @@ class BeliefSystemStore extends EventEmitter {
       default :
         break
     }
-    console.log("BeliefSystemStore received an action", action);
   }
 }
 
